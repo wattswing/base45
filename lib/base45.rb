@@ -24,11 +24,14 @@ module Base45
     #
     #    :Y8UPCAVC3/DH44M-DUJCLQE934AW6X0
     def encode(payload)
-      return if payload.length.zero?
+      sliced_bytes = payload.each_byte.each_slice(2)
+      base45_bytes = sliced_bytes.flat_map do |byte_a, byte_b|
+        byte_b ? encode_two_bytes(byte_a, byte_b) : encode_one_byte(byte_a)
+      end
 
-      return encode_for_single_char(payload) if payload.bytesize < 2
-
-      encode_for_multipe_chars(payload)
+      base45_bytes.map do |byte45|
+        BASE_45_TABLE[byte45.to_s.rjust(2, "0")]
+      end.join
     end
 
     # Returns the Base45-decoded version of +payload+
@@ -50,40 +53,21 @@ module Base45
 
     private
 
+    def encode_one_byte(byte)
+      byte.divmod(45).reverse
+    end
+
+    def encode_two_bytes(first_byte, second_byte)
+      x = (first_byte << 8) + second_byte
+      e, x = x.divmod(45**2)
+      d, c = x.divmod(45)
+
+      [c, d, e]
+    end
+
     def sliced_payload(payload)
       payload.chars.each_slice(3).map do |slice|
         slice.map { |char| INVERTED_BASE_45_TABLE[char]&.to_i }
-      end
-    end
-
-    def encode_for_single_char(payload)
-      keys = payload.bytes[0].divmod(45).reverse
-
-      keys.map { |i| BASE_45_TABLE[i.to_s.rjust(2, "0")] }.join
-    end
-
-    def encode_for_multipe_chars(payload)
-      # 16-bit unsigned (unsigned char) - except big endian
-      bytes16 = payload.unpack("S>*")
-
-      is_odd = payload.bytesize.odd? && payload.bytes[-1] < 256
-      bytes16 << payload.bytes[-1] if is_odd
-
-      modulo45_bytes = modulo45_array(bytes16)
-
-      modulo45_bytes.flatten.map do |i|
-        BASE_45_TABLE[i.to_s.rjust(2, "0")]
-      end.join
-    end
-
-    def modulo45_array(bytes16)
-      bytes16.map do |byte|
-        arr = []
-        multiplier, rest = byte.divmod(45**2)
-        arr << multiplier if multiplier.positive?
-        arr.push(*rest.divmod(45))
-
-        arr.reverse
       end
     end
   end
