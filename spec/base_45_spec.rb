@@ -40,15 +40,21 @@ RSpec.describe(Base45) do
     end
   end
 
-  context("Known errors")
-  it "is expected when decoding using unknown character" do
-    expect{ Base45.decode("^{}[]!&") }.to \
-      raise_error Base45::IllegalCharacterError
-  end
+  context("Handling errors") do
+    it "raises IllegalCharacterError when decoding using unknown characters" do
+      expect{ Base45.decode("^{}[]!&") }.to \
+        raise_error Base45::IllegalCharacterError
+    end
 
-  it "is expected when decoding an even sequence" do
-    expect{ Base45.decode("ABCD") }.to \
-      raise_error Base45::ForbiddenLengthError
+    it "raises ForbiddenLengthError when decoding an even sequence" do
+      expect{ Base45.decode("ABCD") }.to \
+        raise_error Base45::ForbiddenLengthError
+    end
+
+    it "raises OverflowError when decoding unbounded sequence" do
+      expect{ Base45.decode "///" }.to \
+        raise_error Base45::OverflowError
+    end
   end
 
   it "has a version number" do

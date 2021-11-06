@@ -56,6 +56,7 @@ module Base45
 
       factor45 += last_triplet_byte * (45**2)
       x, y = factor45.divmod(256)
+      raise OverflowError unless x < 256
 
       [x, y]
     end
