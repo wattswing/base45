@@ -46,6 +46,11 @@ RSpec.describe(Base45) do
       raise_error Base45::IllegalCharacterError
   end
 
+  it "is expected when decoding an even sequence" do
+    expect{ Base45.decode("ABCD") }.to \
+      raise_error Base45::ForbiddenLengthError
+  end
+
   it "has a version number" do
     expect(Base45::VERSION).not_to be(nil)
   end

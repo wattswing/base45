@@ -43,6 +43,7 @@ module Base45
     #    Encoding in base 45 !
     def decode(payload)
       map45_chars(payload).each_slice(3).flat_map do |c, d, e|
+        c && d or raise ForbiddenLengthError
         v = c + d * 45
         bytes_from_base45(e, v)
       end.pack("C*")
