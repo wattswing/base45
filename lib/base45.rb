@@ -12,8 +12,6 @@ require_relative "base45/encoding_table"
 
 # Exposes two methods to decode and encode in base 45
 module Base45
-  class Error < StandardError; end
-
   class << self
     # Returns the Base45-encoded version of +payload+
     #
@@ -43,15 +41,22 @@ module Base45
     #
     #    Encoding in base 45 !
     def decode(payload)
-      return if payload.length < 2
-
-      lookup = sliced_payload(payload)
-      base45_vals = lookup.map { |c, d, e| c + d * 45 + (e ? e * 45**2 : 0) }
-
-      base45_vals.pack("S>*").gsub(/\x00/, "")
+      map45_chars(payload).each_slice(3).flat_map do |c, d, e|
+        v = c + d * 45
+        bytes_from_base45(e, v)
+      end.pack("C*")
     end
 
     private
+
+    def bytes_from_base45(last_triplet_byte, factor45)
+      return [factor45] unless last_triplet_byte
+
+      factor45 += last_triplet_byte * (45**2)
+      x, y = factor45.divmod(256)
+
+      [x, y]
+    end
 
     def encode_one_byte(byte)
       byte.divmod(45).reverse
@@ -65,9 +70,9 @@ module Base45
       [c, d, e]
     end
 
-    def sliced_payload(payload)
-      payload.chars.each_slice(3).map do |slice|
-        slice.map { |char| INVERTED_BASE_45_TABLE[char]&.to_i }
+    def map45_chars(string)
+      string.upcase.each_char.map do |c|
+        INVERTED_BASE_45_TABLE[c].to_i
       end
     end
   end

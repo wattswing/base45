@@ -19,13 +19,14 @@ ENCODING_EXAMPLES = {
   "blablabla5445" => "-JC0ECPVD-JC0DC:Q681",
   "!@#$%^&*()" => "794-J4QW45$4L35",
   "ietf!" => "QED8WEX0",
-  "ietf" => "QED8WE"
+  "ietf" => "QED8WE",
+  "" => ""
 }.freeze
 
 RSpec.describe(Base45) do
   context("Encoding") do
     ENCODING_EXAMPLES.each do |decoded, encoded|
-      it "in base 45 #{decoded} to #{encoded} properly" do
+      it "in base 45 #{decoded.inspect} to #{encoded.inspect} properly" do
         expect(Base45.encode(decoded)).to eq(encoded)
       end
     end
@@ -33,7 +34,7 @@ RSpec.describe(Base45) do
 
   context("Decoding") do
     ENCODING_EXAMPLES.each do |decoded, encoded|
-      it "from base 45 #{encoded} to #{decoded} properly" do
+      it "from base 45 #{encoded.inspect} to #{decoded.inspect} properly" do
         expect(Base45.decode(encoded)).to eq(decoded)
       end
     end
