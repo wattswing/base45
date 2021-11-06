@@ -40,6 +40,12 @@ RSpec.describe(Base45) do
     end
   end
 
+  context("Known errors")
+  it "is expected when decoding using unknown character" do
+    expect{ Base45.decode("^{}[]!&") }.to \
+      raise_error Base45::IllegalCharacterError
+  end
+
   it "has a version number" do
     expect(Base45::VERSION).not_to be(nil)
   end

@@ -9,6 +9,7 @@
 
 require_relative "base45/version"
 require_relative "base45/encoding_table"
+require_relative "base45/errors"
 
 # Exposes two methods to decode and encode in base 45
 module Base45
@@ -72,7 +73,10 @@ module Base45
 
     def map45_chars(string)
       string.upcase.each_char.map do |c|
-        INVERTED_BASE_45_TABLE[c].to_i
+        char_byte = INVERTED_BASE_45_TABLE[c]
+        raise(IllegalCharacterError, c.inspect) unless char_byte
+
+        char_byte.to_i
       end
     end
   end
