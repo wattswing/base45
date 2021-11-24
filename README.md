@@ -3,12 +3,6 @@
 The Base45 module provides for the encoding (#encode) and
 decoding (#decode) of binary data using a Base45 representation.
 
-Some resources used:
-
-* [Base 45 Draft](https://datatracker.ietf.org/doc/draft-faltstrom-base45/)
-* [A JS Base 45 implementation](http://base45-decode-encode.net/)
-* [SO question](https://stackoverflow.com/questions/68114693/decode-base45-string)
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -59,3 +53,9 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/wattsw
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Resources used
+
+* [Base 45 Draft](https://datatracker.ietf.org/doc/draft-faltstrom-base45/)
+* [A JS Base 45 implementation](http://base45-decode-encode.net/)
+* [SO question](https://stackoverflow.com/questions/68114693/decode-base45-string)
