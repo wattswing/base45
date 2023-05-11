@@ -13,13 +13,13 @@ require_relative "base45/errors"
 
 # Exposes two methods to decode and encode in base 45
 module Base45
-  SQUARE_45 = 45 ** 2
+  SQUARE_45 = 45**2
 
   class << self
     # Returns the Base45-encoded version of +payload+
     #
     #    require 'base45'
-    #    Base45.encode("Encoding in base 45 !")
+    #    Base45.encode('Encoding in base 45 !')
     #
     # <i>Generates:</i>
     #
@@ -38,7 +38,7 @@ module Base45
     # Returns the Base45-decoded version of +payload+
     #
     #    require 'base45'
-    #    Base45.encode(":Y8UPCAVC3/DH44M-DUJCLQE934AW6X0")
+    #    Base45.encode(':Y8UPCAVC3/DH44M-DUJCLQE934AW6X0')
     #
     # <i>Generates:</i>
     #
@@ -46,6 +46,7 @@ module Base45
     def decode(payload)
       map45_chars(payload).each_slice(3).flat_map do |c, d, e|
         raise ForbiddenLengthError if d.nil?
+
         v = c + d * 45
         bytes_from_base45(e, v)
       end.pack("C*")
@@ -56,7 +57,7 @@ module Base45
     def bytes_from_base45(last_triplet_byte, factor45)
       return [factor45] unless last_triplet_byte
 
-      factor45 += last_triplet_byte * (SQUARE_45)
+      factor45 += last_triplet_byte * SQUARE_45
       x, y = factor45.divmod(256)
       raise OverflowError unless x < 256
 
