@@ -13,6 +13,8 @@ require_relative "base45/errors"
 
 # Exposes two methods to decode and encode in base 45
 module Base45
+  SQUARE_45 = 45 ** 2
+
   class << self
     # Returns the Base45-encoded version of +payload+
     #
@@ -29,7 +31,7 @@ module Base45
       end
 
       base45_bytes.map do |byte45|
-        BASE_45_TABLE[byte45.to_s.rjust(2, "0")]
+        BASE_45_TABLE[byte45]
       end.join
     end
 
@@ -43,7 +45,7 @@ module Base45
     #    Encoding in base 45 !
     def decode(payload)
       map45_chars(payload).each_slice(3).flat_map do |c, d, e|
-        c && d or raise ForbiddenLengthError
+        raise ForbiddenLengthError if d.nil?
         v = c + d * 45
         bytes_from_base45(e, v)
       end.pack("C*")
@@ -54,7 +56,7 @@ module Base45
     def bytes_from_base45(last_triplet_byte, factor45)
       return [factor45] unless last_triplet_byte
 
-      factor45 += last_triplet_byte * (45**2)
+      factor45 += last_triplet_byte * (SQUARE_45)
       x, y = factor45.divmod(256)
       raise OverflowError unless x < 256
 
@@ -67,18 +69,15 @@ module Base45
 
     def encode_two_bytes(first_byte, second_byte)
       x = (first_byte << 8) + second_byte
-      e, x = x.divmod(45**2)
+      e, x = x.divmod(SQUARE_45)
       d, c = x.divmod(45)
 
       [c, d, e]
     end
 
     def map45_chars(string)
-      string.upcase.each_char.map do |c|
-        char_byte = INVERTED_BASE_45_TABLE[c]
-        raise(IllegalCharacterError, c.inspect) unless char_byte
-
-        char_byte.to_i
+      string.chars.map do |char|
+        INVERTED_BASE_45_TABLE[char] || raise(IllegalCharacterError, char)
       end
     end
   end
