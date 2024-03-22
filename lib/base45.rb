@@ -7,9 +7,9 @@
 # The Base45 module provides for the encoding (#encode) and
 # decoding (#decode) of binary data using a Base45 representation.
 
-require_relative "base45/version"
-require_relative "base45/encoding_table"
-require_relative "base45/errors"
+require_relative 'base45/version'
+require_relative 'base45/encoding_table'
+require_relative 'base45/errors'
 
 # Exposes two methods to decode and encode in base 45
 module Base45
@@ -49,7 +49,7 @@ module Base45
 
         v = c + d * 45
         bytes_from_base45(e, v)
-      end.pack("C*")
+      end.pack('C*')
     end
 
     private

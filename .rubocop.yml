@@ -1,10 +1,6 @@
 AllCops:
   TargetRubyVersion: 3.0.2
 
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
-
 Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
